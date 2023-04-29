@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Tradify.Identity.Application.Common.Mappings;
 using Tradify.Identity.Application.Interfaces;
-using Tradify.Identity.Application.Responses;
 
 namespace Tradify.Identity.Application.Features.User.Queries;
 

@@ -3,7 +3,7 @@ using FluentValidation;
 using LanguageExt.Common;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Tradify.Identity.Application.Responses.Errors;
+using Tradify.Identity.Application.Extensions;
 
 namespace Tradify.Identity.RestAPI.Controllers;
 

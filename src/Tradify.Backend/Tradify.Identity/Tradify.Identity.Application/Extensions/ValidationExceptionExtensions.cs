@@ -3,7 +3,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Tradify.Identity.Application.Responses.Errors;
+namespace Tradify.Identity.Application.Extensions;
 
 public static class ValidationExceptionExtensions
 {

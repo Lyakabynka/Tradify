@@ -6,8 +6,6 @@ using MediatR;
 using Tradify.Identity.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Tradify.Identity.Application.Interfaces;
-using Tradify.Identity.Application.Responses.Errors.Common;
-using Tradify.Identity.Application.Responses.Types;
 using Unit = LanguageExt.Unit;
 
 namespace Tradify.Identity.Application.Features.User.Commands;

@@ -5,10 +5,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Tradify.Identity.Application.Interfaces;
-using Tradify.Identity.Application.Responses;
-using Tradify.Identity.Application.Responses.Errors;
-using Tradify.Identity.Application.Responses.Errors.Common;
-using Tradify.Identity.Application.Responses.Types;
 using Tradify.Identity.Application.Services;
 using Unit = LanguageExt.Unit;
 
