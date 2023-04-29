@@ -10,7 +10,7 @@ namespace Tradify.Identity.RestAPI.Controllers;
 public class AuthController : ApiControllerBase
 {
     [HttpGet("login")]
-    public async Task<ActionResult> Login([FromQuery] LoginRequestModel requestModel)
+    public async Task<IActionResult> Login([FromQuery] LoginRequestModel requestModel)
     {
         //TODO: validation
         var request = Mapper.Map<LoginCommand>(requestModel);
@@ -19,7 +19,7 @@ public class AuthController : ApiControllerBase
     }
 
     [HttpPut("refresh")]
-    public async Task<ActionResult> Refresh()
+    public async Task<IActionResult> Refresh()
     {
         var request = new RefreshCommand();
         
@@ -27,7 +27,7 @@ public class AuthController : ApiControllerBase
     }
 
     [HttpDelete("logout")]
-    public async Task<ActionResult> Logout()
+    public async Task<IActionResult> Logout()
     {
         var request = new LogoutCommand();
 

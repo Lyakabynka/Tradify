@@ -1,26 +1,24 @@
-﻿using System.Linq.Expressions;
-using BCrypt.Net;
+﻿using BCrypt.Net;
+using FluentValidation;
+using FluentValidation.Results;
+using LanguageExt.Common;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 using Tradify.Identity.Application.Interfaces;
-using Tradify.Identity.Application.Responses;
-using Tradify.Identity.Application.Responses.Errors;
-using Tradify.Identity.Application.Responses.Errors.Common;
-using Tradify.Identity.Application.Responses.Types;
 using Tradify.Identity.Application.Services;
 using Tradify.Identity.Domain.Entities;
+using Unit = LanguageExt.Unit;
 
 namespace Tradify.Identity.Application.Features.Auth.Commands;
 
-public class LoginCommand : IRequest<MediatorResult<Empty>>
+public class LoginCommand : IRequest<Result<Unit>>
 {
     public string UserName { get; set; }
     public string Password { get; set; }
 }
 
-public class LoginCommandHandler : IRequestHandler<LoginCommand, MediatorResult<Empty>>
+public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<Unit>>
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly JwtProvider _jwtProvider;
@@ -39,23 +37,37 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, MediatorResult<
         _cookieProvider = cookieProvider;
     }
     
-    public async Task<MediatorResult<Empty>> Handle(LoginCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Unit>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        var result = new MediatorResult<Empty>();
-        
+
         var user = await _dbContext.Users
             .FirstOrDefaultAsync(u => u.UserName == request.UserName, cancellationToken);
+        
+        List<ValidationFailure>? failures = null;
         if (user is null)
         {
-            result.Error = new ExpectedError("User with given user name does not exist", ErrorCode.UserNotFound);
-            return result;
+            failures ??= new List<ValidationFailure>();
+            
+            var message = "User with given username does not exist.";
+            failures.Add(
+                new ValidationFailure(nameof(Domain.Entities.User), message));
         }
 
         if (!BCrypt.Net.BCrypt.EnhancedVerify(request.Password, user.PasswordHash, HashType.SHA512))
         {
-            result.Error = new ExpectedError("Incorrect password", ErrorCode.PasswordInvalid);
-            return result;
+            failures ??= new List<ValidationFailure>();
+            
+            var message = "Invalid password."; 
+            failures.Add(
+                new ValidationFailure(nameof(request.Password),message));
         }
+
+        if (failures is not null)
+        {
+            var error = new ValidationException(failures);
+            return new Result<Unit>(error);
+        }
+        
 
         //finding existing session by user id
         var existingSession = await _dbContext.RefreshSessions
@@ -88,7 +100,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, MediatorResult<
         _cookieProvider.AddJwtCookieToResponse(_context.Response, jwtToken);
         _cookieProvider.AddRefreshCookieToResponse(_context.Response,existingSession.RefreshToken.ToString());
         
-        return result;
+        return Unit.Default;
     }
 }
 

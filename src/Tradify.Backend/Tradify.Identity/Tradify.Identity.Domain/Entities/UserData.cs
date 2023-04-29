@@ -1,4 +1,6 @@
-﻿namespace Tradify.Identity.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Tradify.Identity.Domain.Entities;
 
 public class UserData : BaseEntity
 {

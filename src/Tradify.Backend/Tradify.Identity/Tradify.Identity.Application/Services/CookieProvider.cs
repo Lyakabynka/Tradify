@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FluentValidation;
+using FluentValidation.Results;
+using LanguageExt.Common;
+using Microsoft.AspNetCore.Http;
 using Tradify.Identity.Application.Common.Configurations;
 using Tradify.Identity.Application.Responses;
 using Tradify.Identity.Application.Responses.Errors;
@@ -40,28 +43,14 @@ public class CookieProvider
     }
 
     // Extract refresh token from http-only cookie
-    public MediatorResult<Guid> GetRefreshTokenFromCookie(HttpRequest request)
+    public Guid? GetRefreshTokenFromCookie(HttpRequest request)
     {
-        var result = new MediatorResult<Guid>();
-        
         // Try to extract refresh token from cookie. If it is absent - exception
         var refreshTokenString = request.Cookies[_refreshSessionConfiguration.RefreshCookieName];
-        if(refreshTokenString is null)
-        {
-            result.Error = new ExpectedError("Cookies do not contain refresh token",
-                ErrorCode.RefreshInCookiesNotFound);
-            return result;
-        }
-        
-        if (!Guid.TryParse(refreshTokenString, out var refreshToken))
-        {
-            result.Error = new ExpectedError("Error on parsing refresh token from cookies",
-                ErrorCode.RefreshParseError);
-            return result;
-        }
 
-        result.Data = refreshToken;
-        return result;
+        return Guid.TryParse(refreshTokenString, out var refreshToken) 
+            ? refreshToken 
+            : null;
     }
 
     public void DeleteJwtTokenFromCookies(HttpResponse response)
