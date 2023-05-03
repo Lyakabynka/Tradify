@@ -6,6 +6,7 @@ using MediatR;
 using Tradify.Identity.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Tradify.Identity.Application.Interfaces;
+
 using Unit = LanguageExt.Unit;
 
 namespace Tradify.Identity.Application.Features.User.Commands;
@@ -33,7 +34,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<Un
     {
         _dbContext = dbContext;
     }
-
+    
     public async Task<Result<Unit>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         List<ValidationFailure>? failures = null;

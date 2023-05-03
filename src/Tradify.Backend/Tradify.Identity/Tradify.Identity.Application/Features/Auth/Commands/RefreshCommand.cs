@@ -37,7 +37,7 @@ public class RefreshCommandHandler : IRequestHandler<RefreshCommand, Result<Unit
         if (refreshToken is null)
         {
             var message = "Error on getting refresh token from cookie.";
-            var error = new ValidationException(message, new[]
+            var error = new ValidationException(new[]
             {
                 new ValidationFailure(nameof(refreshToken),message)
             });
@@ -50,7 +50,7 @@ public class RefreshCommandHandler : IRequestHandler<RefreshCommand, Result<Unit
         if (existingSession is null)
         {
             var message = "Refresh session was not found.";
-            var error = new ValidationException(message, new[]
+            var error = new ValidationException(new[]
             {
                 new ValidationFailure(nameof(refreshToken),message)
             });
@@ -58,17 +58,16 @@ public class RefreshCommandHandler : IRequestHandler<RefreshCommand, Result<Unit
         }
 
         existingSession.RefreshToken = Guid.NewGuid();
-        existingSession.UpdatedAt = DateTime.Now;
+        existingSession.UpdatedAt = DateTime.UtcNow;
         
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         var user = await _dbContext.Users
             .FirstOrDefaultAsync(u => u.Id == existingSession.UserId, cancellationToken);
-        
         if (user is null)
         {
             var message = "User with found refresh session was not found.";
-            var error = new ValidationException(message, new[]
+            var error = new ValidationException(new[]
             {
                 new ValidationFailure(nameof(refreshToken),message)
             });

@@ -34,11 +34,10 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, Result<Unit>>
     public async Task<Result<Unit>> Handle(LogoutCommand request, CancellationToken cancellationToken)
     {
         var refreshToken = _cookieProvider.GetRefreshTokenFromCookie(_context.Request);
-
         if (refreshToken is null)
         {
             var message = "Error on getting refresh token from cookie.";
-            var error = new ValidationException(message, new[]
+            var error = new ValidationException(new[]
             {
                 new ValidationFailure(nameof(refreshToken),message)
             });
@@ -46,11 +45,11 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, Result<Unit>>
         }
 
         var existingSession = await _dbContext.RefreshSessions
-            .FirstOrDefaultAsync(cancellationToken);
+            .FirstOrDefaultAsync(session => session.RefreshToken == refreshToken, cancellationToken);
         if (existingSession is null)
         {
             var message = "Refresh session by refresh token was not found.";
-            var error = new ValidationException(message, new[]
+            var error = new ValidationException(new[]
             {
                 new ValidationFailure(nameof(refreshToken),message)
             });

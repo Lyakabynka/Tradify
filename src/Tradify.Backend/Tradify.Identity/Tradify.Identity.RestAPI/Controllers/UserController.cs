@@ -18,9 +18,9 @@ public class UserController : ApiControllerBase
     }
 
     [HttpGet("public/{usersIds}")]
-    public async Task<IActionResult> GetUsersByIds([FromRoute] IEnumerable<int> usersIds)
+    public async Task<IActionResult> GetUsersByIds([FromRoute] params int[] usersIds)
     {
-        var request = new GetUsersQuery()
+        var request = new GetUsersSummariesQuery()
         {
             UsersIds = usersIds
         };
@@ -51,15 +51,22 @@ public class UserController : ApiControllerBase
         return await RequestAsync(request);
     }
     
-    // [Authorize]
-    // [HttpPut("{userId:int}")]
-    // public async Task<IActionResult> GetUserPersonalById([FromRoute] int userId, [FromBody] )
-    // {
-    //     var request = new GetUserPersonalQuery()
-    //     {
-    //         UserId = userId
-    //     };
-    //
-    //     return await RequestAsync(request);
-    // }
+    [Authorize]
+    [HttpPut("{userId:int}")]
+    public async Task<IActionResult> UpdateUserData([FromBody] UpdateUserDataRequestModel updateUserDataRequestModel)
+    {
+        var request = new UpdateUserDataCommand()
+        {
+            UserId = updateUserDataRequestModel.UserId, // TODO: take Id out of here ( receive id from Claims )
+            AvatarPath = updateUserDataRequestModel.AvatarPath,
+            FirstName = updateUserDataRequestModel.FirstName,
+            LastName = updateUserDataRequestModel.LastName,
+            MiddleName = updateUserDataRequestModel.MiddleName,
+            Phone = updateUserDataRequestModel.Phone,
+            HomeAddress = updateUserDataRequestModel.HomeAddress,
+            BirthDate = updateUserDataRequestModel.BirthDate
+        };
+    
+        return await RequestAsync(request);
+    }
 }

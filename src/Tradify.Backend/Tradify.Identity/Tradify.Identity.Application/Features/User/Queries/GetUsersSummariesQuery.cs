@@ -8,31 +8,25 @@ using Tradify.Identity.Application.Interfaces;
 
 namespace Tradify.Identity.Application.Features.User.Queries;
 
-public class UserSummaryResponseModel : IMappable
+public class UserSummaryResponseModel
 {
     public string UserName { get; set; }
     public string AvatarPath { get; set; }
-
-
-    public void Mapping(Profile profile)
-    {
-        profile.CreateMap<Domain.Entities.User, UserSummaryResponseModel>();
-    }
 }
 
-public class GetUsersQuery : IRequest<Result<IEnumerable<UserSummaryResponseModel>>>, IRequest
+public class GetUsersSummariesQuery : IRequest<Result<IEnumerable<UserSummaryResponseModel>>>, IRequest
 {
     public IEnumerable<int> UsersIds { get; set; }
 }
 
-public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, Result<IEnumerable<UserSummaryResponseModel>>>
+public class GetUsersSummariesQueryHandler : IRequestHandler<GetUsersSummariesQuery, Result<IEnumerable<UserSummaryResponseModel>>>
 {
     private readonly IApplicationDbContext _dbContext;
 
-    public GetUsersQueryHandler(IApplicationDbContext dbContext) =>
+    public GetUsersSummariesQueryHandler(IApplicationDbContext dbContext) =>
     _dbContext = dbContext;
 
-        public async Task<Result<IEnumerable<UserSummaryResponseModel>>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<UserSummaryResponseModel>>> Handle(GetUsersSummariesQuery request, CancellationToken cancellationToken)
     {
         var userSummaryResponseModels = await _dbContext.Users
             .Where(u => request.UsersIds.Any(id => id == u.Id))

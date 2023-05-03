@@ -11,7 +11,7 @@ namespace Tradify.Identity.Persistence.EntityTypeConfigurations
             builder.HasKey(u => u.Id);
             builder.HasOne(u => u.UserData)
                 .WithOne(ud => ud.User)
-                .HasForeignKey<UserData>(ud => ud.UserId);
+                .HasForeignKey<UserData>(ud => ud.Id);
         }
     }
 }

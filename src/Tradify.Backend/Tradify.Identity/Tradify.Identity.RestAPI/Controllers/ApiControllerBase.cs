@@ -3,7 +3,7 @@ using FluentValidation;
 using LanguageExt.Common;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Tradify.Identity.Application.Extensions;
+using Tradify.Identity.Application.Common.Extensions;
 
 namespace Tradify.Identity.RestAPI.Controllers;
 
@@ -29,13 +29,12 @@ public class ApiControllerBase : ControllerBase
             // ReSharper disable once HeapView.PossibleBoxingAllocation
             return Ok(b);
         },exception =>
-        {
-            if (exception is ValidationException validationException)
+        {  
+            return exception switch
             {
-                return BadRequest(validationException.ToProblemDetails());
-            }
-
-            return StatusCode(500);
+                ValidationException validationException => BadRequest(validationException.ToProblemDetails()),
+                _ => StatusCode(500),
+            };
         });
     }
     
